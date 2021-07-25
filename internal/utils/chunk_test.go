@@ -1,51 +1,50 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestInputEmptySlice_ReturnEmptySlices(t *testing.T) {
-	emptySlice := make([]int, 0)
-
-	result := ChunkSlice(emptySlice, 3)
-
-	if len(result) != 1 {
-		t.Fatal("result slice must have one empty slice")
+func TestChunkAllCases(t *testing.T) {
+	cases := []struct {
+		input          []int
+		expected       [][]int
+		maxSizeOfButch int
+	}{
+		{[]int{1, 2, 3, 4}, [][]int{{1, 2}, {3, 4}}, 2},
+		{[]int{1, 2, 3, 4, 5}, [][]int{{1, 2}, {3, 4}, {5}}, 2},
+		{[]int{}, [][]int{{}}, 2},
+		{nil, [][]int{{}}, 2},
 	}
 
-	if len(result[0]) != 0 {
-		t.Fatal("Inner slice not empty")
-	}
-}
+	for i := range cases {
+		actual := ChunkSlice(cases[i].input, cases[i].maxSizeOfButch)
 
-func TestInputWithRemainderEqualZero_ReturnCorrectChunkedSlice(t *testing.T) {
-	slice := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	maxSizeChunk := 2
-
-	result := ChunkSlice(slice, maxSizeChunk)
-
-	if len(result) != 5 {
-		t.Fatal("result slice must have 5 inners slices")
-	}
-
-	for i, v := range result {
-		if len(v) != maxSizeChunk {
-			t.Fatalf("inner slice with index: %v must have legth is: %v", i, maxSizeChunk)
+		if !equalTwoDimensionalSlices(actual, cases[i].expected) {
+			t.Fatalf("Expected and actual result not equal; actual: %v; expected: %v; maxSizeOfButch: %v", actual, cases[i].expected, cases[i].maxSizeOfButch)
 		}
 	}
 }
 
-func TestInputWithRemainderNotEqualZero_ReturnCorrectChunkedSlice(t *testing.T) {
-	slice := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
-	maxSizeChunk := 2
-
-	result := ChunkSlice(slice, maxSizeChunk)
-
-	if len(result) != 6 {
-		t.Fatal("result slice must have 6 inners slices")
+func equalTwoDimensionalSlices(a, b [][]int) bool {
+	if len(a) != len(b) {
+		return false
 	}
-
-	for i, v := range result {
-		if len(v) > maxSizeChunk {
-			t.Fatalf("inner slice with index: %v must have legth equal or less them: %v", i, maxSizeChunk)
+	for i := range a {
+		if !equalSliceInt(a[i], b[i]) {
+			return false
 		}
 	}
+	return true
+}
+
+func equalSliceInt(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }

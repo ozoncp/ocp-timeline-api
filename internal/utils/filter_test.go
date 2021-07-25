@@ -1,43 +1,39 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestInputEmptySplit_ReturnEmptySlice(t *testing.T) {
-	input := make([]string, 0)
+func TestFilterByHardcodeSliceAllCases(t *testing.T) {
+	cases := []struct {
+		input    []string
+		expected []string
+	}{
+		{[]string{}, []string{}},
+		{[]string{"candle", "wonder", "car", "input"}, []string{"candle", "wonder", "input"}},
+		{[]string{"candle", "wonder", "HardcodeWord", "input"}, []string{"candle", "wonder", "HardcodeWord", "input"}},
+		{[]string{"apple", "book", "car", "pie"}, []string{}},
+		{nil, []string{}},
+	}
 
-	result := FilterByHardcodeSlice(input)
+	for i := range cases {
+		actual := FilterByHardcodeSlice(cases[i].input)
 
-	if len(result) != 0 {
-		t.Fatalf("Result filtering from empty split must be empty split")
+		if !equalSliceString(actual, cases[i].expected) {
+			t.Fatalf("Expected and actual result not equal; actual: %v; expected: %v;", actual, cases[i].expected)
+		}
+
 	}
 }
 
-func TestInputWithOneHardcodeWord_ReturnCorrectResult(t *testing.T) {
-	input := []string{"candle", "wonder", "car", "input"}
-
-	result := FilterByHardcodeSlice(input)
-
-	if len(result) != len(input)-1 {
-		t.Fatalf("Filtering not correct working; Expexted length of filterd slice is: %v, but was %v ", len(input)-1, len(result))
+func equalSliceString(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
 	}
-}
-
-func TestInputWithoutHardcodeWord_ReturnCorrectResult(t *testing.T) {
-	input := []string{"candle", "wonder", "HardcodeWord", "input"}
-
-	result := FilterByHardcodeSlice(input)
-
-	if len(result) != len(input) {
-		t.Fatalf("After filtering must be equal length spices")
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
 	}
-}
-
-func TestInputOnlyHardcodeWord_ReturnEmptySlice(t *testing.T) {
-	input := []string{"apple", "book", "car", "pie"}
-
-	result := FilterByHardcodeSlice(input)
-
-	if len(result) != 0 {
-		t.Fatalf("After filtering must be empty spice in result, but was %v", len(result))
-	}
+	return true
 }

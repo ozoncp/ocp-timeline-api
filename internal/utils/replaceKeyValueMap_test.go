@@ -1,51 +1,31 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestInputEmptyMap_ReturnEmptyMap(t *testing.T) {
-	input := make(map[string]int, 0)
-
-	result := RevertKeyValue(input)
-
-	if len(result) != 0 {
-		t.Fatal("result map must be empty")
-	}
-}
-
-func TestInputNotEmptyMap_ReturnCorrectResult(t *testing.T) {
-	input := map[string]int{
-		"str1": 1,
-		"str2": 2,
-		"str3": 3,
+func TestRevertKeyValueAllCases(t *testing.T) {
+	cases := []struct {
+		input    map[string]int
+		expected map[int]string
+	}{
+		{map[string]int{}, map[int]string{}},
+		{nil, map[int]string{}},
+		{map[string]int{"str1": 1, "str2": 2, "str3": 3}, map[int]string{1: "str1", 2: "str2", 3: "str3"}},
+		{map[string]int{"str1": 1, "str2": 2, "str3": 3, "str4": 3}, map[int]string{1: "str1", 2: "str2", 3: "str3"}},
 	}
 
-	result := RevertKeyValue(input)
+	for i := range cases {
+		actual := RevertKeyValue(cases[i].input)
 
-	if len(result) != len(input) {
-		t.Fatalf("result map expected length: %v, but was %v", len(input), len(result))
-	}
+		if len(actual) != len(cases[i].expected) {
+			t.Fatalf("Not correct length of actual and expected; actual: %v; expected: %v", actual, cases[i].expected)
+		}
 
-	if firstValue, ok := result[1]; !ok || firstValue != "str1" {
-		t.Fatalf("result map doe not have required key: %v; or value not equal \"str1\" - it was %v", 1, firstValue)
-	}
-}
-
-func TestInputNotEmptyMapWithRepeatedValues_ReturnCorrectResult(t *testing.T) {
-	input := map[string]int{
-		"str1": 1,
-		"str2": 2,
-		"str3": 3,
-		"str4": 3,
-		"str5": 3,
-	}
-
-	result := RevertKeyValue(input)
-
-	if len(result) != 3 {
-		t.Fatalf("result map expected length: %v, but was %v", 3, len(result))
-	}
-
-	if firstValue, ok := result[1]; !ok || firstValue != "str1" {
-		t.Fatalf("result map doe not have required key: %v; or value not equal \"str1\" - it was %v", 1, firstValue)
+		for k, v := range actual {
+			if cases[i].expected[k] != v {
+				t.Fatalf("Not correct revevert key with values of actual and expected; actual: %v; expected: %v", actual, cases[i].expected)
+			}
+		}
 	}
 }
