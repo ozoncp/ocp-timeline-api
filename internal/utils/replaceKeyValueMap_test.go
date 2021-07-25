@@ -12,7 +12,6 @@ func TestRevertKeyValueAllCases(t *testing.T) {
 		{map[string]int{}, map[int]string{}},
 		{nil, map[int]string{}},
 		{map[string]int{"str1": 1, "str2": 2, "str3": 3}, map[int]string{1: "str1", 2: "str2", 3: "str3"}},
-		{map[string]int{"str1": 1, "str2": 2, "str3": 3, "str4": 3}, map[int]string{1: "str1", 2: "str2", 3: "str3"}},
 	}
 
 	for i := range cases {
