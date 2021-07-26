@@ -1,9 +1,6 @@
 PROJECT_ROOT = $(shell pwd )
 BIN_DIR ?= $(PROJECT_ROOT)/bin
 
-hello:
-	@echo "hello from make"
-
 build: clean
 	@echo "Building..."
 	@go build -o "$(BIN_DIR)/ocp-timeline-api" "$(PROJECT_ROOT)/cmd/ocp-timeline-api/main.go"
