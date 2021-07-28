@@ -13,19 +13,22 @@ func main() {
 	fmt.Println("In this project we probably will calculate timeline of something 🤔")
 }
 
-func readConfig() {
+func readConfig() error {
 	configPath := getPathToConfig()
 
 	for i := 0; i < 5; i++ {
 		file, err := os.Open(configPath)
 
-		defer func() {
-			if err == nil {
-				file.Close()
-			}
-		}()
+		if err != nil {
+			return err
+		}
 
+		defer func() {
+			file.Close()
+		}()
 	}
+
+	return nil
 }
 
 func getPathToConfig() string {

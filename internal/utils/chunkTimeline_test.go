@@ -60,10 +60,11 @@ func equalTwoDimensionalTimeline(left [][]m.Timeline, right [][]m.Timeline) bool
 }
 
 func fabricTimeline(id uint64) m.Timeline {
-	userId := uint64(2)
-	typeId := uint64(3)
-	from := int64(200)
-	to := int64(600)
-
-	return m.Timeline{Id: id, UserId: userId, Type: typeId, From: m.Timestamp(from), To: m.Timestamp(to)}
+	return m.Timeline{
+		Id:     id,
+		UserId: uint64(2),
+		Type:   uint64(3),
+		From:   m.Timestamp(int64(200)),
+		To:     m.Timestamp(int64(200)),
+	}
 }
