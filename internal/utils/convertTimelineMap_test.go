@@ -12,21 +12,21 @@ func TestConvertTimelineInMapAllScenarious(t *testing.T) {
 		hasError bool
 	}{
 		{input: []m.Timeline{
-			fabricTimeline(1),
-			fabricTimeline(2),
-			fabricTimeline(3)},
+			newTimeline(1),
+			newTimeline(2),
+			newTimeline(3)},
 			expected: map[uint64]m.Timeline{
-				1: fabricTimeline(1),
-				2: fabricTimeline(2),
-				3: fabricTimeline(3),
+				1: newTimeline(1),
+				2: newTimeline(2),
+				3: newTimeline(3),
 			},
 			hasError: false},
 		{nil, map[uint64]m.Timeline{}, false},
 		{[]m.Timeline{}, map[uint64]m.Timeline{}, false},
 		{input: []m.Timeline{
-			fabricTimeline(1),
-			fabricTimeline(2),
-			fabricTimeline(2)},
+			newTimeline(1),
+			newTimeline(2),
+			newTimeline(2)},
 			expected: nil,
 			hasError: true},
 	}

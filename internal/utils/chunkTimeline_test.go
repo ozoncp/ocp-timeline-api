@@ -14,13 +14,13 @@ func TestChunkTimelineAllCases(t *testing.T) {
 		{nil, [][]m.Timeline{{}}, 2},
 		{[]m.Timeline{}, [][]m.Timeline{{}}, 2},
 		{
-			input:          []m.Timeline{fabricTimeline(1), fabricTimeline(2), fabricTimeline(3), fabricTimeline(4)},
-			expected:       [][]m.Timeline{{fabricTimeline(1), fabricTimeline(2)}, {fabricTimeline(3), fabricTimeline(4)}},
+			input:          []m.Timeline{newTimeline(1), newTimeline(2), newTimeline(3), newTimeline(4)},
+			expected:       [][]m.Timeline{{newTimeline(1), newTimeline(2)}, {newTimeline(3), newTimeline(4)}},
 			maxSizeOfChunk: 2,
 		},
 		{
-			input:          []m.Timeline{fabricTimeline(1), fabricTimeline(2), fabricTimeline(3), fabricTimeline(4), fabricTimeline(5)},
-			expected:       [][]m.Timeline{{fabricTimeline(1), fabricTimeline(2)}, {fabricTimeline(3), fabricTimeline(4)}, {fabricTimeline(5)}},
+			input:          []m.Timeline{newTimeline(1), newTimeline(2), newTimeline(3), newTimeline(4), newTimeline(5)},
+			expected:       [][]m.Timeline{{newTimeline(1), newTimeline(2)}, {newTimeline(3), newTimeline(4)}, {newTimeline(5)}},
 			maxSizeOfChunk: 2,
 		},
 	}
@@ -59,7 +59,7 @@ func equalTwoDimensionalTimeline(left [][]m.Timeline, right [][]m.Timeline) bool
 	return true
 }
 
-func fabricTimeline(id uint64) m.Timeline {
+func newTimeline(id uint64) m.Timeline {
 	return m.Timeline{
 		Id:     id,
 		UserId: uint64(2),
