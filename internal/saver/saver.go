@@ -3,6 +3,7 @@ package saver
 import (
 	"github.com/ozoncp/ocp-timeline-api/internal/flusher"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
+	"sync"
 	"time"
 )
 
@@ -15,10 +16,11 @@ type Saver interface {
 
 func NewSaver(capacity int, flusher flusher.Flusher) Saver {
 	saver := &saver{
-		capacity:   capacity,
-		flusher:    flusher,
-		stopChanel: make(chan int),
-		dataChanel: make(chan models.Timeline, capacity),
+		capacity:      capacity,
+		flusher:       flusher,
+		stopChanel:    make(chan int),
+		dataContainer: make([]models.Timeline, 0, capacity),
+		mutex:         sync.Mutex{},
 	}
 
 	saver.init()
@@ -27,16 +29,17 @@ func NewSaver(capacity int, flusher flusher.Flusher) Saver {
 }
 
 type saver struct {
-	capacity   int
-	flusher    flusher.Flusher
-	stopChanel chan int
-	dataChanel chan models.Timeline
+	capacity      int
+	flusher       flusher.Flusher
+	stopChanel    chan int
+	dataContainer []models.Timeline
+	mutex         sync.Mutex
 }
 
 func (s *saver) Save(entity models.Timeline) {
-	go func() {
-		s.dataChanel <- entity
-	}()
+	s.mutex.Lock()
+	s.dataContainer = append(s.dataContainer, entity)
+	s.mutex.Unlock()
 }
 
 func (s *saver) Close() {
@@ -45,41 +48,26 @@ func (s *saver) Close() {
 
 func (s *saver) init() {
 	var ticker = time.NewTicker(duration)
-	defer ticker.Stop()
-	defer close(s.dataChanel)
-	defer close(s.stopChanel)
 
 	go func() {
+		defer ticker.Stop()
+		defer close(s.stopChanel)
+
 		for {
 			select {
 			case <-ticker.C:
 				s.inputInFlusher()
 			case <-s.stopChanel:
-				for {
-					if len(s.dataChanel) != 0 {
-						s.inputInFlusher()
-					} else {
-						return
-					}
-				}
+				s.inputInFlusher()
+				return
 			}
 		}
 	}()
 }
 
-func (s *saver) readFromChanelInSlice() []models.Timeline {
-	result := make([]models.Timeline, 0, s.capacity)
-
-	for i := 0; i < len(s.dataChanel); i++ {
-		result = append(result, <-s.dataChanel)
-	}
-
-	return result
-}
-
 func (s *saver) inputInFlusher() {
-	data := s.readFromChanelInSlice()
-	if len(data) != 0 {
-		s.flusher.Flush(data)
+	if len(s.dataContainer) != 0 {
+		s.flusher.Flush(s.dataContainer)
+		s.dataContainer = nil
 	}
 }
