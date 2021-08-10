@@ -38,8 +38,9 @@ type saver struct {
 
 func (s *saver) Save(entity models.Timeline) {
 	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
 	s.dataContainer = append(s.dataContainer, entity)
-	s.mutex.Unlock()
 }
 
 func (s *saver) Close() {
@@ -66,11 +67,11 @@ func (s *saver) init() {
 }
 
 func (s *saver) inputInFlusher() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 
-	copyData := append(s.dataContainer[:0:0], s.dataContainer...)
-
-	if len(copyData) != 0 {
-		s.flusher.Flush(copyData)
+	if len(s.dataContainer) != 0 {
+		s.flusher.Flush(s.dataContainer)
 		s.dataContainer = nil
 	}
 }
