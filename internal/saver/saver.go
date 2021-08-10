@@ -66,8 +66,11 @@ func (s *saver) init() {
 }
 
 func (s *saver) inputInFlusher() {
-	if len(s.dataContainer) != 0 {
-		s.flusher.Flush(s.dataContainer)
+
+	copyData := append(s.dataContainer[:0:0], s.dataContainer...)
+
+	if len(copyData) != 0 {
+		s.flusher.Flush(copyData)
 		s.dataContainer = nil
 	}
 }
