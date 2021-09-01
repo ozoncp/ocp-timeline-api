@@ -1,40 +1,36 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path"
+	"github.com/ozoncp/ocp-timeline-api/internal/api"
+	desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
+	"google.golang.org/grpc"
+	"log"
+	"net"
 )
 
-const configFileName = "config2.json"
+const (
+	grpcPort = ":1025"
+)
 
-func main() {
-	readConfig()
-	fmt.Println("In this project we probably will calculate timeline of something 🤔")
-}
+func run() error {
+	listen, err := net.Listen("tcp", grpcPort)
 
-func readConfig() error {
-	configPath := getPathToConfig()
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
 
-	for i := 0; i < 5; i++ {
-		file, err := os.Open(configPath)
+	s := grpc.NewServer()
+	desc.RegisterOcpTimelineApiServer(s, api.NewServiceOcpTimeline())
 
-		if err != nil {
-			return err
-		}
-
-		defer func() {
-			file.Close()
-		}()
+	if err := s.Serve(listen); err != nil {
+		log.Fatalf("failed to server: %v", err)
 	}
 
 	return nil
 }
 
-func getPathToConfig() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
+func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
 	}
-	return path.Join(dir, configFileName)
 }
