@@ -1,10 +1,6 @@
 PROJECT_ROOT = $(shell pwd )
 BIN_DIR ?= $(PROJECT_ROOT)/bin
 
-build: clean
-	@echo "Building..."
-	@go build -o "$(BIN_DIR)/ocp-timeline-api" "$(PROJECT_ROOT)/cmd/ocp-timeline-api/main.go"
-
 run:
 	@echo "Runing..."
 	@go run "$(PROJECT_ROOT)/cmd/ocp-timeline-api/main.go"
@@ -40,7 +36,7 @@ build: vendor-proto .generate .build
 .PHONY: .build
 .build:
 		@echo "Building..."
-		CGO_ENABLED=0 GOOS=linux go build -o "$(BIN_DIR)/ocp-timeline-api" "$(PROJECT_ROOT)/cmd/ocp-timeline-api/main.go"
+		CGO_ENABLED=0 GOOS=linux go build -o bin/ocp-timeline-api cmd/ocp-timeline-api/main.go
 
 .PHONY: install
 install: build .install
