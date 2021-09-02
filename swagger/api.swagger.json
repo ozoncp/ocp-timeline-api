@@ -145,7 +145,7 @@
     "apiCreateTimelineV1Request": {
       "type": "object",
       "properties": {
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "uint64"
         },
@@ -205,7 +205,7 @@
           "type": "string",
           "format": "uint64"
         },
-        "userId": {
+        "user_id": {
           "type": "string",
           "format": "uint64"
         },
