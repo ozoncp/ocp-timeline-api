@@ -33,11 +33,7 @@ func run() error {
 	return nil
 }
 
-func runJSON() {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-
-	defer cancel()
+func runJSON(ctx context.Context) {
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 
@@ -54,7 +50,11 @@ func runJSON() {
 }
 
 func main() {
-	go runJSON()
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
+
+	go runJSON(ctx)
 
 	if err := run(); err != nil {
 		log.Fatal(err)

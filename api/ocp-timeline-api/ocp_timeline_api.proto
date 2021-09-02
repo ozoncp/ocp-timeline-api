@@ -36,14 +36,14 @@ service OcpTimelineApi {
 }
 
 message CreateTimelineV1Request {
-  uint64 userId =1;
-  uint64 type =2;
+  uint64 user_id = 1;
+  uint64 type = 2;
   int64 from = 3;
   int64 to = 4;
 }
 
 message CreateTimelineV1Response{
-  uint64 id=1;
+  uint64 id = 1;
 }
 
 message GetTimelineV1Request{
@@ -55,8 +55,8 @@ message GetTimelineV1Response {
 }
 
 message ListTimelineV1Request{
-  uint64 limit =1;
-  uint64 offset=2;
+  uint64 limit = 1;
+  uint64 offset = 2;
 }
 
 message ListTimelineV1Response{
@@ -72,7 +72,7 @@ message RemoveTimelineV1Response{}
 
 message Timeline{
   uint64 id = 1;
-  uint64 userId =2;
+  uint64 user_id =2;
   uint64 type =3;
   int64 from =4;
   int64 to =5;
