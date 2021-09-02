@@ -35,6 +35,7 @@ build: vendor-proto .generate .build
 		mv pkg/ocp-timeline-api//github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api/* pkg/ocp-timeline-api/
 		rm -rf pkg/ocp-timeline-api/github.com
 		mkdir -p cmd/ocp-timeline-api
+		cd pkg/ocp-timeline-api && ls go.mod || go mod init github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api && go mod tidy
 
 .PHONY: .build
 .build:
