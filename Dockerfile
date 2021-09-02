@@ -34,5 +34,5 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /home/developer/go/src/github.com/ozoncp/ocp-timeline-api/bin/ocp-timeline-api .
 RUN chown root:root ocp-timeline-api
-EXPOSE 82
+EXPOSE 1025 8081
 CMD ["./ocp-timeline-api"]
