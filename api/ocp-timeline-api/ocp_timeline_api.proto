@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package ocp.timeline.api;
+
+option go_package="github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api;ocp_timeline_api";
+
+
+service OcpTimelineApi {
+  //CreateTimelineV1 adds a Timeline
+  rpc CreateTimelineV1(CreateTimelineV1Request) returns (CreateTimelineV1Response) {
+    option (google.api.http) = {
+      post: "/v1/timelines"
+      body: "*"
+    };
+  }
+
+  rpc GetTimelineV1(GetTimelineV1Request) returns (GetTimelineV1Response) {
+    option (google.api.http) = {
+      get: "/v1/timelines/{id}"
+    };
+  }
+
+  rpc ListTimelineV1(ListTimelineV1Request) returns (ListTimelineV1Response) {
+    option (google.api.http) = {
+      get: "/v1/timelines"
+    };
+  }
+
+  rpc RemoveTimelineV1(RemoveTimelineV1Request) returns (RemoveTimelineV1Response) {
+    option (google.api.http) = {
+      delete: "/v1/timelines/{id}"
+    };
+  }
+}
+
+message CreateTimelineV1Request {
+  uint64 user_id = 1;
+  uint64 type = 2;
+  int64 from = 3;
+  int64 to = 4;
+}
+
+message CreateTimelineV1Response{
+  uint64 id = 1;
+}
+
+message GetTimelineV1Request{
+  uint64 id = 1;
+}
+
+message GetTimelineV1Response {
+  Timeline timeline = 1;
+}
+
+message ListTimelineV1Request{
+  uint64 limit = 1;
+  uint64 offset = 2;
+}
+
+message ListTimelineV1Response{
+  uint64 total = 1;
+  repeated Timeline timelines = 2;
+}
+
+message RemoveTimelineV1Request{
+  uint64 id = 1;
+}
+
+message RemoveTimelineV1Response{}
+
+message Timeline{
+  uint64 id = 1;
+  uint64 user_id =2;
+  uint64 type =3;
+  int64 from =4;
+  int64 to =5;
+}

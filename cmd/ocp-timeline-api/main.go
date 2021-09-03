@@ -1,40 +1,62 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"path"
+	"context"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/ozoncp/ocp-timeline-api/internal/api"
+	desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
+	"google.golang.org/grpc"
+	"log"
+	"net"
+	"net/http"
 )
 
-const configFileName = "config2.json"
+const (
+	grpcPort           = ":1025"
+	grpcServerEndPoint = "localhost:1025"
+)
 
-func main() {
-	readConfig()
-	fmt.Println("In this project we probably will calculate timeline of something 🤔")
-}
+func run() error {
+	listen, err := net.Listen("tcp", grpcPort)
 
-func readConfig() error {
-	configPath := getPathToConfig()
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
 
-	for i := 0; i < 5; i++ {
-		file, err := os.Open(configPath)
+	s := grpc.NewServer()
+	desc.RegisterOcpTimelineApiServer(s, api.NewServiceOcpTimeline())
 
-		if err != nil {
-			return err
-		}
-
-		defer func() {
-			file.Close()
-		}()
+	if err := s.Serve(listen); err != nil {
+		log.Fatalf("failed to server: %v", err)
 	}
 
 	return nil
 }
 
-func getPathToConfig() string {
-	dir, err := os.Getwd()
+func runJSON(ctx context.Context) {
+	mux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+
+	err := desc.RegisterOcpTimelineApiHandlerFromEndpoint(ctx, mux, grpcServerEndPoint, opts)
+
 	if err != nil {
 		panic(err)
 	}
-	return path.Join(dir, configFileName)
+
+	err = http.ListenAndServe(":8081", mux)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
+
+	go runJSON(ctx)
+
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
 }
