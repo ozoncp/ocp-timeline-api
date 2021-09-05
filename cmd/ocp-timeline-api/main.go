@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/ozoncp/ocp-timeline-api/internal/api"
+	"github.com/ozoncp/ocp-timeline-api/internal/db"
+	"github.com/ozoncp/ocp-timeline-api/internal/repo"
 	desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
 	"google.golang.org/grpc"
 	"log"
@@ -24,7 +26,7 @@ func run() error {
 	}
 
 	s := grpc.NewServer()
-	desc.RegisterOcpTimelineApiServer(s, api.NewServiceOcpTimeline())
+	desc.RegisterOcpTimelineApiServer(s, api.NewServiceOcpTimeline(repo.NewRepoDb(db.Connect())))
 
 	if err := s.Serve(listen); err != nil {
 		log.Fatalf("failed to server: %v", err)
