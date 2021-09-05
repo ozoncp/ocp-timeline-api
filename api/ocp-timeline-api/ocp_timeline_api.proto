@@ -40,6 +40,21 @@ service OcpTimelineApi {
       body: "*"
     };
   }
+
+  rpc MultiCreateTimelinesV1(MultiCreateTimelinesV1Request) returns (MultiCreateTimelinesV1Response){
+    option (google.api.http) = {
+      post: "/v1/timelines/multi"
+      body: "*"
+    };
+  }
+}
+
+message MultiCreateTimelinesV1Request{
+  repeated Timeline timelines = 1;
+}
+
+message MultiCreateTimelinesV1Response{
+  bool added =1;
 }
 
 message UpdateTimelineV1Request{

@@ -110,6 +110,38 @@
         ]
       }
     },
+    "/v1/timelines/multi": {
+      "post": {
+        "operationId": "OcpTimelineApi_MultiCreateTimelinesV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateTimelinesV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiMultiCreateTimelinesV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpTimelineApi"
+        ]
+      }
+    },
     "/v1/timelines/{id}": {
       "get": {
         "operationId": "OcpTimelineApi_GetTimelineV1",
@@ -220,6 +252,25 @@
           "items": {
             "$ref": "#/definitions/apiTimeline"
           }
+        }
+      }
+    },
+    "apiMultiCreateTimelinesV1Request": {
+      "type": "object",
+      "properties": {
+        "timelines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiTimeline"
+          }
+        }
+      }
+    },
+    "apiMultiCreateTimelinesV1Response": {
+      "type": "object",
+      "properties": {
+        "added": {
+          "type": "boolean"
         }
       }
     },

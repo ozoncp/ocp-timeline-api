@@ -11,4 +11,5 @@ type Repo interface {
 	DescribeEntity(ctx context.Context, entityId uint64) (*models.Timeline, error)
 	RemoveEntity(ctx context.Context, entityId uint64) error
 	UpdateEntity(ctx context.Context, timeline *models.Timeline) (bool, error)
+	MultiCreateEntity(ctx context.Context, entities []models.Timeline) ([]uint64, error)
 }

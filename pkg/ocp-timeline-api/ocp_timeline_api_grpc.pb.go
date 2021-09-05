@@ -24,6 +24,7 @@ type OcpTimelineApiClient interface {
 	ListTimelineV1(ctx context.Context, in *ListTimelineV1Request, opts ...grpc.CallOption) (*ListTimelineV1Response, error)
 	RemoveTimelineV1(ctx context.Context, in *RemoveTimelineV1Request, opts ...grpc.CallOption) (*RemoveTimelineV1Response, error)
 	UpdateTimelineV1(ctx context.Context, in *UpdateTimelineV1Request, opts ...grpc.CallOption) (*UpdateTimelineV1Response, error)
+	MultiCreateTimelinesV1(ctx context.Context, in *MultiCreateTimelinesV1Request, opts ...grpc.CallOption) (*MultiCreateTimelinesV1Response, error)
 }
 
 type ocpTimelineApiClient struct {
@@ -79,6 +80,15 @@ func (c *ocpTimelineApiClient) UpdateTimelineV1(ctx context.Context, in *UpdateT
 	return out, nil
 }
 
+func (c *ocpTimelineApiClient) MultiCreateTimelinesV1(ctx context.Context, in *MultiCreateTimelinesV1Request, opts ...grpc.CallOption) (*MultiCreateTimelinesV1Response, error) {
+	out := new(MultiCreateTimelinesV1Response)
+	err := c.cc.Invoke(ctx, "/ocp.timeline.api.OcpTimelineApi/MultiCreateTimelinesV1", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OcpTimelineApiServer is the server API for OcpTimelineApi service.
 // All implementations must embed UnimplementedOcpTimelineApiServer
 // for forward compatibility
@@ -89,6 +99,7 @@ type OcpTimelineApiServer interface {
 	ListTimelineV1(context.Context, *ListTimelineV1Request) (*ListTimelineV1Response, error)
 	RemoveTimelineV1(context.Context, *RemoveTimelineV1Request) (*RemoveTimelineV1Response, error)
 	UpdateTimelineV1(context.Context, *UpdateTimelineV1Request) (*UpdateTimelineV1Response, error)
+	MultiCreateTimelinesV1(context.Context, *MultiCreateTimelinesV1Request) (*MultiCreateTimelinesV1Response, error)
 	mustEmbedUnimplementedOcpTimelineApiServer()
 }
 
@@ -110,6 +121,9 @@ func (UnimplementedOcpTimelineApiServer) RemoveTimelineV1(context.Context, *Remo
 }
 func (UnimplementedOcpTimelineApiServer) UpdateTimelineV1(context.Context, *UpdateTimelineV1Request) (*UpdateTimelineV1Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTimelineV1 not implemented")
+}
+func (UnimplementedOcpTimelineApiServer) MultiCreateTimelinesV1(context.Context, *MultiCreateTimelinesV1Request) (*MultiCreateTimelinesV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MultiCreateTimelinesV1 not implemented")
 }
 func (UnimplementedOcpTimelineApiServer) mustEmbedUnimplementedOcpTimelineApiServer() {}
 
@@ -214,6 +228,24 @@ func _OcpTimelineApi_UpdateTimelineV1_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OcpTimelineApi_MultiCreateTimelinesV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiCreateTimelinesV1Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OcpTimelineApiServer).MultiCreateTimelinesV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ocp.timeline.api.OcpTimelineApi/MultiCreateTimelinesV1",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OcpTimelineApiServer).MultiCreateTimelinesV1(ctx, req.(*MultiCreateTimelinesV1Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OcpTimelineApi_ServiceDesc is the grpc.ServiceDesc for OcpTimelineApi service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -240,6 +272,10 @@ var OcpTimelineApi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateTimelineV1",
 			Handler:    _OcpTimelineApi_UpdateTimelineV1_Handler,
+		},
+		{
+			MethodName: "MultiCreateTimelinesV1",
+			Handler:    _OcpTimelineApi_MultiCreateTimelinesV1_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
