@@ -1,13 +1,14 @@
 package flusher
 
 import (
+	"context"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
 	"github.com/ozoncp/ocp-timeline-api/internal/repo"
 	"github.com/ozoncp/ocp-timeline-api/internal/utils"
 )
 
 type Flusher interface {
-	Flush(entities []models.Timeline) []models.Timeline
+	Flush(ctx context.Context, entities []models.Timeline) []models.Timeline
 }
 
 func NewFlusher(chunkSize int, entityRepo repo.Repo) Flusher {
@@ -22,7 +23,7 @@ type flusher struct {
 	entityRepo repo.Repo
 }
 
-func (f *flusher) Flush(entities []models.Timeline) []models.Timeline {
+func (f *flusher) Flush(ctx context.Context, entities []models.Timeline) []models.Timeline {
 
 	if len(entities) == 0 {
 		return entities
@@ -31,11 +32,14 @@ func (f *flusher) Flush(entities []models.Timeline) []models.Timeline {
 	chunks := utils.ChunkTimeline(entities, f.chunkSize)
 
 	for i := range chunks {
-		err := f.entityRepo.AddEntities(chunks[i])
+		for j := range chunks[i] {
+			err := f.entityRepo.AddEntities(ctx, &chunks[i][j])
 
-		if err != nil {
-			panic("repo not work")
+			if err != nil {
+				panic("repo not work")
+			}
 		}
+
 	}
 
 	return entities

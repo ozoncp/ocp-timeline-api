@@ -33,13 +33,28 @@ service OcpTimelineApi {
       delete: "/v1/timelines/{id}"
     };
   }
+
+  rpc UpdateTimelineV1(UpdateTimelineV1Request) returns (UpdateTimelineV1Response){
+    option (google.api.http) = {
+      put: "/v1/timelines"
+      body: "*"
+    };
+  }
+}
+
+message UpdateTimelineV1Request{
+    Timeline timeline = 1;
+}
+
+message UpdateTimelineV1Response{
+  bool updated = 1;
 }
 
 message CreateTimelineV1Request {
   uint64 user_id = 1;
   uint64 type = 2;
-  int64 from = 3;
-  int64 to = 4;
+  string from = 3;
+  string to = 4;
 }
 
 message CreateTimelineV1Response{
@@ -74,6 +89,6 @@ message Timeline{
   uint64 id = 1;
   uint64 user_id =2;
   uint64 type =3;
-  int64 from =4;
-  int64 to =5;
+  string from =4;
+  string to =5;
 }

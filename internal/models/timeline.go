@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Timestamp int64
+type Timestamp time.Time
 
 type Timeline struct {
 	Id     uint64
@@ -17,8 +17,8 @@ type Timeline struct {
 
 func (t *Timeline) String() string {
 
-	fromStr := time.Unix(int64(t.From), 0).Format(time.RFC3339)
-	toStr := time.Unix(int64(t.To), 0).Format(time.RFC3339)
+	fromStr := time.Time(t.From).Format(time.RFC3339)
+	toStr := time.Time(t.To).Format(time.RFC3339)
 
 	return fmt.Sprintf("Id: %v; UserId: %v, Type: %v; From: %v; To: %v", t.Id, t.UserId, t.Type, fromStr, toStr)
 }
