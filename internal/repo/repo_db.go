@@ -16,6 +16,43 @@ type repoDb struct {
 	db *sqlx.DB
 }
 
+func (r *repoDb) MultiCreateEntity(ctx context.Context, entities []models.Timeline) ([]uint64, error) {
+	query := sq.Insert(timelineTableName).
+		Columns("user_id", "\"type\"", "\"from\"", "\"to\"").
+		Suffix("RETURNING \"timeline_id\"").
+		RunWith(r.db).
+		PlaceholderFormat(sq.Dollar)
+
+	for index := range entities {
+		query = query.Values(
+			entities[index].UserId,
+			entities[index].Type,
+			entities[index].From,
+			entities[index].To,
+		)
+	}
+
+	rows, err := query.QueryContext(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]uint64, 0)
+
+	for rows.Next() {
+		var id uint64
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, id)
+	}
+
+	return result, nil
+}
+
 func (r *repoDb) UpdateEntity(ctx context.Context, timeline *models.Timeline) (bool, error) {
 	var query = sq.Update(timelineTableName).
 		Set("user_id", &timeline.UserId).
