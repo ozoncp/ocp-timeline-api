@@ -19,9 +19,9 @@ type repoDb struct {
 func (r *repoDb) UpdateEntity(ctx context.Context, timeline *models.Timeline) (bool, error) {
 	var query = sq.Update(timelineTableName).
 		Set("user_id", &timeline.UserId).
-		Set("\"type_id\"", &timeline.Type).
-		Set("\"from\"", timeline.From.AsTime()).
-		Set("\"to\"", timeline.To.AsTime()).
+		Set("type_id", &timeline.Type).
+		Set("start_timeline", timeline.From.AsTime()).
+		Set("end_timeline", timeline.To.AsTime()).
 		RunWith(r.db).
 		PlaceholderFormat(sq.Dollar)
 	traceQuerySql(query)
@@ -60,7 +60,7 @@ func (r *repoDb) AddEntities(ctx context.Context, entity *models.Timeline) error
 	toTime := entity.To.AsTime()
 
 	query := sq.Insert(timelineTableName).
-		Columns("user_id", "\"type_id\"", "\"from\"", "\"to\"").
+		Columns("user_id", "type_id", "start_timeline", "end_timeline").
 		Values(
 			entity.UserId,
 			entity.Type,
@@ -82,7 +82,7 @@ func (r *repoDb) AddEntities(ctx context.Context, entity *models.Timeline) error
 }
 
 func (r *repoDb) ListEntities(ctx context.Context, limit, offset uint64) ([]models.Timeline, error) {
-	query := sq.Select("timeline_id", "user_id", "\"type_id\"", "\"from\"", "\"to\"").
+	query := sq.Select("timeline_id", "user_id", "type_id", "start_timeline", "end_timeline").
 		From(timelineTableName).
 		OrderBy("timeline_id").Limit(limit).Offset(offset).
 		RunWith(r.db).
@@ -123,7 +123,7 @@ func (r *repoDb) ListEntities(ctx context.Context, limit, offset uint64) ([]mode
 }
 
 func (r *repoDb) DescribeEntity(ctx context.Context, entityId uint64) (*models.Timeline, error) {
-	query := sq.Select("timeline_id", "user_id", "\"type_id\"", "\"from\"", "\"to\"").
+	query := sq.Select("timeline_id", "user_id", "type_id", "start_timeline", "end_timeline").
 		From(timelineTableName).
 		Where(sq.Eq{"timeline_id": entityId}).
 		RunWith(r.db).
