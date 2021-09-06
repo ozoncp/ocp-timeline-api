@@ -187,13 +187,15 @@ func (m *CreateTimelineV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for UserId
-
-	// no validation rules for Type
-
-	// no validation rules for From
-
-	// no validation rules for To
+	if v, ok := interface{}(m.GetTimeline()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateTimelineV1RequestValidationError{
+				field:  "Timeline",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	return nil
 }

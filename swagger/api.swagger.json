@@ -175,19 +175,8 @@
     "apiCreateTimelineV1Request": {
       "type": "object",
       "properties": {
-        "user_id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "type": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "from": {
-          "type": "string"
-        },
-        "to": {
-          "type": "string"
+        "timeline": {
+          "$ref": "#/definitions/apiTimeline"
         }
       }
     },

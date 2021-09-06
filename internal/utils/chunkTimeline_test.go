@@ -3,6 +3,7 @@ package utils
 import (
 	m "github.com/ozoncp/ocp-timeline-api/internal/models"
 	"testing"
+	"time"
 )
 
 func TestChunkTimelineAllCases(t *testing.T) {
@@ -64,7 +65,7 @@ func newTimeline(id uint64) m.Timeline {
 		Id:     id,
 		UserId: uint64(2),
 		Type:   uint64(3),
-		From:   m.Timestamp(int64(200)),
-		To:     m.Timestamp(int64(200)),
+		From:   m.Timestamp(time.Unix(100, 0)),
+		To:     m.Timestamp(time.Unix(200, 0)),
 	}
 }

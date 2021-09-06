@@ -43,10 +43,12 @@ var _ = Describe("Api", func() {
 				to := time.Unix(200, 0)
 
 				input := &desc.CreateTimelineV1Request{
-					UserId: uint64(userId),
-					Type:   uint64(typeId),
-					From:   from.Format(time.RFC3339),
-					To:     to.Format(time.RFC3339),
+					Timeline: &desc.Timeline{
+						UserId: uint64(userId),
+						Type:   uint64(typeId),
+						From:   from.Format(time.RFC3339),
+						To:     to.Format(time.RFC3339),
+					},
 				}
 
 				server.CreateTimelineV1(ctx, input)
@@ -60,10 +62,12 @@ var _ = Describe("Api", func() {
 				to := "not correct date"
 
 				input := &desc.CreateTimelineV1Request{
-					UserId: uint64(userId),
-					Type:   uint64(typeId),
-					From:   from,
-					To:     to,
+					Timeline: &desc.Timeline{
+						UserId: uint64(userId),
+						Type:   uint64(typeId),
+						From:   from,
+						To:     to,
+					},
 				}
 
 				_, err := server.CreateTimelineV1(ctx, input)

@@ -15,7 +15,7 @@ func init() {
 
 func (a *serviceOcpTimeline) CreateTimelineV1(context context.Context, req *desc.CreateTimelineV1Request) (*desc.CreateTimelineV1Response, error) {
 
-	from, to, errFrom, errTo := convertTimeInTime(req.From, req.To)
+	from, to, errFrom, errTo := convertTimeInTime(req.Timeline.From, req.Timeline.To)
 
 	if errFrom != nil {
 		return nil, errFrom
@@ -26,8 +26,8 @@ func (a *serviceOcpTimeline) CreateTimelineV1(context context.Context, req *desc
 	}
 
 	timeline := models.Timeline{
-		UserId: req.UserId,
-		Type:   req.Type,
+		UserId: req.Timeline.UserId,
+		Type:   req.Timeline.Type,
 		From:   models.Timestamp(from),
 		To:     models.Timestamp(to),
 	}

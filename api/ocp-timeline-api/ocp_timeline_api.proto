@@ -51,10 +51,7 @@ message UpdateTimelineV1Response{
 }
 
 message CreateTimelineV1Request {
-  uint64 user_id = 1;
-  uint64 type = 2;
-  string from = 3;
-  string to = 4;
+  Timeline timeline = 1;
 }
 
 message CreateTimelineV1Response{
