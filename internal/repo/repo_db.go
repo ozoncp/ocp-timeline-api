@@ -5,6 +5,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
+	"github.com/ozoncp/ocp-timeline-api/internal/utils"
 	"github.com/rs/zerolog/log"
 	"time"
 )
@@ -18,9 +19,9 @@ type repoDb struct {
 func (r *repoDb) UpdateEntity(ctx context.Context, timeline *models.Timeline) (bool, error) {
 	var query = sq.Update(timelineTableName).
 		Set("user_id", &timeline.UserId).
-		Set("\"type\"", &timeline.Type).
-		Set("\"from\"", time.Time(timeline.From)).
-		Set("\"to\"", time.Time(timeline.From)).
+		Set("\"type_id\"", &timeline.Type).
+		Set("\"from\"", timeline.From.AsTime()).
+		Set("\"to\"", timeline.To.AsTime()).
 		RunWith(r.db).
 		PlaceholderFormat(sq.Dollar)
 	traceQuerySql(query)
@@ -55,13 +56,16 @@ func (r *repoDb) RemoveEntity(ctx context.Context, entityId uint64) error {
 }
 
 func (r *repoDb) AddEntities(ctx context.Context, entity *models.Timeline) error {
+	fromTime := entity.From.AsTime()
+	toTime := entity.To.AsTime()
+
 	query := sq.Insert(timelineTableName).
-		Columns("user_id", "\"type\"", "\"from\"", "\"to\"").
+		Columns("user_id", "\"type_id\"", "\"from\"", "\"to\"").
 		Values(
 			entity.UserId,
 			entity.Type,
-			time.Time(entity.From),
-			time.Time(entity.To)).
+			fromTime,
+			toTime).
 		Suffix("RETURNING \"timeline_id\"").
 		RunWith(r.db).
 		PlaceholderFormat(sq.Dollar)
@@ -78,7 +82,7 @@ func (r *repoDb) AddEntities(ctx context.Context, entity *models.Timeline) error
 }
 
 func (r *repoDb) ListEntities(ctx context.Context, limit, offset uint64) ([]models.Timeline, error) {
-	query := sq.Select("timeline_id", "user_id", "\"type\"", "\"from\"", "\"to\"").
+	query := sq.Select("timeline_id", "user_id", "\"type_id\"", "\"from\"", "\"to\"").
 		From(timelineTableName).
 		OrderBy("timeline_id").Limit(limit).Offset(offset).
 		RunWith(r.db).
@@ -110,8 +114,8 @@ func (r *repoDb) ListEntities(ctx context.Context, limit, offset uint64) ([]mode
 			return nil, err
 		}
 
-		timeline.From = models.Timestamp(from)
-		timeline.To = models.Timestamp(from)
+		timeline.From = utils.ConvertTimeInTimeStamp(from)
+		timeline.To = utils.ConvertTimeInTimeStamp(to)
 		timelines = append(timelines, timeline)
 	}
 
@@ -119,7 +123,7 @@ func (r *repoDb) ListEntities(ctx context.Context, limit, offset uint64) ([]mode
 }
 
 func (r *repoDb) DescribeEntity(ctx context.Context, entityId uint64) (*models.Timeline, error) {
-	query := sq.Select("timeline_id", "user_id", "\"type\"", "\"from\"", "\"to\"").
+	query := sq.Select("timeline_id", "user_id", "\"type_id\"", "\"from\"", "\"to\"").
 		From(timelineTableName).
 		Where(sq.Eq{"timeline_id": entityId}).
 		RunWith(r.db).

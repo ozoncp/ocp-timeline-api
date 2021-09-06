@@ -1,8 +1,8 @@
 package models
 
 import (
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"testing"
-	"time"
 )
 
 func TestString(t *testing.T) {
@@ -10,7 +10,7 @@ func TestString(t *testing.T) {
 		input    Timeline
 		expected string
 	}{
-		{Timeline{Id: 1, UserId: 2, Type: 3, From: Timestamp(time.Unix(100, 0)), To: Timestamp(time.Unix(200, 0))}, "Id: 1; UserId: 2, Type: 3; From: 1970-01-01T03:01:40+03:00; To: 1970-01-01T03:03:20+03:00"},
+		{Timeline{Id: 1, UserId: 2, Type: 3, From: timestamp.Timestamp{Seconds: 100}, To: timestamp.Timestamp{Seconds: 200}}, "Id: 1; UserId: 2, Type: 3; From: 1970-01-01T00:01:40Z; To: 1970-01-01T00:03:20Z"},
 	}
 
 	for i := range cases {

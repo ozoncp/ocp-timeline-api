@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"github.com/golang/mock/gomock"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
+	"github.com/ozoncp/ocp-timeline-api/internal/flusher"
 	"github.com/ozoncp/ocp-timeline-api/internal/mocks"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
-	"time"
-
-	"github.com/ozoncp/ocp-timeline-api/internal/flusher"
 )
 
 var _ = Describe("Flusher", func() {
@@ -111,7 +110,7 @@ func newTimeline(id uint64) models.Timeline {
 		Id:     id,
 		UserId: uint64(2),
 		Type:   uint64(3),
-		From:   models.Timestamp(time.Now()),
-		To:     models.Timestamp(time.Now()),
+		From:   timestamp.Timestamp{Seconds: 100},
+		To:     timestamp.Timestamp{Seconds: 200},
 	}
 }

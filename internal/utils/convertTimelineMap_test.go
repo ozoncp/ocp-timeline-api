@@ -47,8 +47,11 @@ func TestConvertTimelineInMapAllScenarious(t *testing.T) {
 		}
 
 		for k := range actual {
-			if cases[i].expected[k] != actual[k] {
-				t.Fatalf("Not correct value for key: %v actual[k]: %v, expected[k]: %v", k, actual[k], cases[i].expected[k])
+			expected := cases[i].expected[k]
+			actualCurrent := actual[k]
+
+			if !equalTimeline(&expected, &actualCurrent) {
+				t.Fatalf("Not correct value for key: %v actual[k]: %v, expected[k]: %v", k, actualCurrent, expected)
 			}
 		}
 	}

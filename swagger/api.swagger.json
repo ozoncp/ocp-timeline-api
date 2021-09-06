@@ -231,10 +231,12 @@
           "format": "uint64"
         },
         "from": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "to": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

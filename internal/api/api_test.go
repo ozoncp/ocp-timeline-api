@@ -9,6 +9,7 @@ import (
 	"github.com/ozoncp/ocp-timeline-api/internal/api"
 	"github.com/ozoncp/ocp-timeline-api/internal/mocks"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
+	"github.com/ozoncp/ocp-timeline-api/internal/utils"
 	desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
 	"time"
 )
@@ -33,46 +34,26 @@ var _ = Describe("Api", func() {
 	})
 
 	Describe("crud", func() {
+
+		from := utils.ConvertTimeInTimeStamp(time.Now())
+		to := utils.ConvertTimeInTimeStamp(time.Now())
+
+		timeline := &desc.Timeline{
+			UserId: uint64(1),
+			Type:   uint64(1),
+			From:   &from,
+			To:     &to,
+		}
+
 		Context("add", func() {
 			It("correct date from/to", func() {
 				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(1)
 
-				userId := 1
-				typeId := 1
-				from := time.Unix(200, 0)
-				to := time.Unix(200, 0)
-
 				input := &desc.CreateTimelineV1Request{
-					Timeline: &desc.Timeline{
-						UserId: uint64(userId),
-						Type:   uint64(typeId),
-						From:   from.Format(time.RFC3339),
-						To:     to.Format(time.RFC3339),
-					},
+					Timeline: timeline,
 				}
 
 				server.CreateTimelineV1(ctx, input)
-			})
-
-			It("not correct date from/to = return error", func() {
-
-				userId := 1
-				typeId := 1
-				from := "not correct date"
-				to := "not correct date"
-
-				input := &desc.CreateTimelineV1Request{
-					Timeline: &desc.Timeline{
-						UserId: uint64(userId),
-						Type:   uint64(typeId),
-						From:   from,
-						To:     to,
-					},
-				}
-
-				_, err := server.CreateTimelineV1(ctx, input)
-
-				gomega.Expect(err).ToNot(gomega.BeNil())
 			})
 		})
 
@@ -82,8 +63,8 @@ var _ = Describe("Api", func() {
 					Id:     1,
 					UserId: 2,
 					Type:   3,
-					From:   models.Timestamp(time.Now()),
-					To:     models.Timestamp(time.Now()),
+					From:   utils.ConvertTimeInTimeStamp(time.Now()),
+					To:     utils.ConvertTimeInTimeStamp(time.Now()),
 				}
 
 				mockRepo.EXPECT().DescribeEntity(ctx, gomock.Any()).Times(1).Return(result, nil)
@@ -111,13 +92,7 @@ var _ = Describe("Api", func() {
 				mockRepo.EXPECT().UpdateEntity(ctx, gomock.Any()).Times(1).Return(true, nil)
 
 				input := &desc.UpdateTimelineV1Request{
-					Timeline: &desc.Timeline{
-						Id:     1,
-						UserId: 2,
-						Type:   2,
-						From:   time.Now().Format(time.RFC3339),
-						To:     time.Now().Format(time.RFC3339),
-					},
+					Timeline: timeline,
 				}
 
 				server.UpdateTimelineV1(ctx, input)
@@ -128,13 +103,7 @@ var _ = Describe("Api", func() {
 				mockRepo.EXPECT().UpdateEntity(ctx, gomock.Any()).Times(1).Return(false, errors.New("some want wro"))
 
 				input := &desc.UpdateTimelineV1Request{
-					Timeline: &desc.Timeline{
-						Id:     1,
-						UserId: 2,
-						Type:   2,
-						From:   time.Now().Format(time.RFC3339),
-						To:     time.Now().Format(time.RFC3339),
-					},
+					Timeline: timeline,
 				}
 
 				_, err := server.UpdateTimelineV1(ctx, input)
@@ -199,6 +168,5 @@ var _ = Describe("Api", func() {
 				gomega.Expect(err).ToNot(gomega.BeNil())
 			})
 		})
-
 	})
 })

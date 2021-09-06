@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 package ocp.timeline.api;
 
@@ -86,6 +88,6 @@ message Timeline{
   uint64 id = 1;
   uint64 user_id =2;
   uint64 type =3;
-  string from =4;
-  string to =5;
+  google.protobuf.Timestamp from =4;
+  google.protobuf.Timestamp  to =5;
 }
