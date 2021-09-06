@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 package ocp.timeline.api;
 
@@ -33,13 +35,25 @@ service OcpTimelineApi {
       delete: "/v1/timelines/{id}"
     };
   }
+
+  rpc UpdateTimelineV1(UpdateTimelineV1Request) returns (UpdateTimelineV1Response){
+    option (google.api.http) = {
+      put: "/v1/timelines"
+      body: "*"
+    };
+  }
+}
+
+message UpdateTimelineV1Request{
+    Timeline timeline = 1;
+}
+
+message UpdateTimelineV1Response{
+  bool updated = 1;
 }
 
 message CreateTimelineV1Request {
-  uint64 user_id = 1;
-  uint64 type = 2;
-  int64 from = 3;
-  int64 to = 4;
+  Timeline timeline = 1;
 }
 
 message CreateTimelineV1Response{
@@ -74,6 +88,6 @@ message Timeline{
   uint64 id = 1;
   uint64 user_id =2;
   uint64 type =3;
-  int64 from =4;
-  int64 to =5;
+  google.protobuf.Timestamp from =4;
+  google.protobuf.Timestamp  to =5;
 }

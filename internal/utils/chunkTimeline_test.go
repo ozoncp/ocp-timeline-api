@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/golang/protobuf/ptypes/timestamp"
 	m "github.com/ozoncp/ocp-timeline-api/internal/models"
 	"testing"
 )
@@ -35,7 +36,11 @@ func TestChunkTimelineAllCases(t *testing.T) {
 }
 
 func equalTimeline(left *m.Timeline, right *m.Timeline) bool {
-	return left.Id == right.Id && left.UserId == right.UserId && left.Type == right.Type && left.From == right.From && left.To == right.To
+	return left.Id == right.Id &&
+		left.UserId == right.UserId &&
+		left.Type == right.Type &&
+		left.From.Seconds == right.From.Seconds &&
+		left.To.Seconds == right.To.Seconds
 }
 
 func equalTwoDimensionalTimeline(left [][]m.Timeline, right [][]m.Timeline) bool {
@@ -64,7 +69,7 @@ func newTimeline(id uint64) m.Timeline {
 		Id:     id,
 		UserId: uint64(2),
 		Type:   uint64(3),
-		From:   m.Timestamp(int64(200)),
-		To:     m.Timestamp(int64(200)),
+		From:   timestamp.Timestamp{Seconds: 100},
+		To:     timestamp.Timestamp{Seconds: 200},
 	}
 }

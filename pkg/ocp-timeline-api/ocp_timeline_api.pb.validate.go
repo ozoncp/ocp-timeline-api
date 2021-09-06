@@ -33,6 +33,152 @@ var (
 	_ = anypb.Any{}
 )
 
+// Validate checks the field values on UpdateTimelineV1Request with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateTimelineV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	if v, ok := interface{}(m.GetTimeline()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateTimelineV1RequestValidationError{
+				field:  "Timeline",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// UpdateTimelineV1RequestValidationError is the validation error returned by
+// UpdateTimelineV1Request.Validate if the designated constraints aren't met.
+type UpdateTimelineV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateTimelineV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateTimelineV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateTimelineV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateTimelineV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateTimelineV1RequestValidationError) ErrorName() string {
+	return "UpdateTimelineV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateTimelineV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateTimelineV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateTimelineV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateTimelineV1RequestValidationError{}
+
+// Validate checks the field values on UpdateTimelineV1Response with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *UpdateTimelineV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Updated
+
+	return nil
+}
+
+// UpdateTimelineV1ResponseValidationError is the validation error returned by
+// UpdateTimelineV1Response.Validate if the designated constraints aren't met.
+type UpdateTimelineV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateTimelineV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateTimelineV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateTimelineV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateTimelineV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateTimelineV1ResponseValidationError) ErrorName() string {
+	return "UpdateTimelineV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateTimelineV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateTimelineV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateTimelineV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateTimelineV1ResponseValidationError{}
+
 // Validate checks the field values on CreateTimelineV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
@@ -41,13 +187,15 @@ func (m *CreateTimelineV1Request) Validate() error {
 		return nil
 	}
 
-	// no validation rules for UserId
-
-	// no validation rules for Type
-
-	// no validation rules for From
-
-	// no validation rules for To
+	if v, ok := interface{}(m.GetTimeline()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateTimelineV1RequestValidationError{
+				field:  "Timeline",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	return nil
 }
@@ -627,9 +775,25 @@ func (m *Timeline) Validate() error {
 
 	// no validation rules for Type
 
-	// no validation rules for From
+	if v, ok := interface{}(m.GetFrom()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TimelineValidationError{
+				field:  "From",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
-	// no validation rules for To
+	if v, ok := interface{}(m.GetTo()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TimelineValidationError{
+				field:  "To",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	return nil
 }

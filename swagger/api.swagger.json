@@ -78,6 +78,36 @@
         "tags": [
           "OcpTimelineApi"
         ]
+      },
+      "put": {
+        "operationId": "OcpTimelineApi_UpdateTimelineV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/apiUpdateTimelineV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiUpdateTimelineV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "OcpTimelineApi"
+        ]
       }
     },
     "/v1/timelines/{id}": {
@@ -145,21 +175,8 @@
     "apiCreateTimelineV1Request": {
       "type": "object",
       "properties": {
-        "user_id": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "type": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "from": {
-          "type": "string",
-          "format": "int64"
-        },
-        "to": {
-          "type": "string",
-          "format": "int64"
+        "timeline": {
+          "$ref": "#/definitions/apiTimeline"
         }
       }
     },
@@ -215,11 +232,27 @@
         },
         "from": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         },
         "to": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
+        }
+      }
+    },
+    "apiUpdateTimelineV1Request": {
+      "type": "object",
+      "properties": {
+        "timeline": {
+          "$ref": "#/definitions/apiTimeline"
+        }
+      }
+    },
+    "apiUpdateTimelineV1Response": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "boolean"
         }
       }
     },

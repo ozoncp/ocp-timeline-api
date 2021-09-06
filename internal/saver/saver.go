@@ -1,6 +1,7 @@
 package saver
 
 import (
+	"context"
 	"github.com/ozoncp/ocp-timeline-api/internal/flusher"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
 	"sync"
@@ -71,7 +72,7 @@ func (s *saver) inputInFlusher() {
 	defer s.mutex.Unlock()
 
 	if len(s.dataContainer) != 0 {
-		s.flusher.Flush(s.dataContainer)
+		s.flusher.Flush(context.TODO(), s.dataContainer)
 		s.dataContainer = nil
 	}
 }

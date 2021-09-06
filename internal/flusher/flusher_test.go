@@ -1,9 +1,12 @@
 package flusher_test
 
 import (
+	"context"
 	"errors"
 	"github.com/golang/mock/gomock"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	. "github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 	"github.com/ozoncp/ocp-timeline-api/internal/flusher"
 	"github.com/ozoncp/ocp-timeline-api/internal/mocks"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
@@ -14,11 +17,13 @@ var _ = Describe("Flusher", func() {
 	var (
 		crtl     *gomock.Controller
 		mockRepo *mocks.MockRepo
+		ctx      context.Context
 	)
 
 	BeforeEach(func() {
 		crtl = gomock.NewController(GinkgoT())
 		mockRepo = mocks.NewMockRepo(crtl)
+		ctx = context.TODO()
 	})
 
 	AfterEach(func() {
@@ -35,22 +40,14 @@ var _ = Describe("Flusher", func() {
 				newTimeline(5),
 			}
 
-			It("without a remainder AddEntities must called 2 times", func() {
-				mockRepo.EXPECT().AddEntities(gomock.Any()).Times(2)
+			It("without a remainder AddEntities must called 4 times", func() {
+				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(4)
 
 				flusher := flusher.NewFlusher(2, mockRepo)
 
-				flusher.Flush(data[:4])
-			})
+				result := flusher.Flush(ctx, data[:4])
 
-			It("with a remainder AddEntities must called 3 times", func() {
-				mockRepo.EXPECT().AddEntities(data[:2]).Times(1)
-				mockRepo.EXPECT().AddEntities(data[2:4]).Times(1)
-				mockRepo.EXPECT().AddEntities(data[4:]).Times(1)
-
-				flusher := flusher.NewFlusher(2, mockRepo)
-
-				flusher.Flush(data)
+				gomega.Expect(result).Should(gomega.BeEquivalentTo(data[:4]))
 			})
 		})
 
@@ -59,22 +56,22 @@ var _ = Describe("Flusher", func() {
 
 				input := make([]models.Timeline, 0)
 
-				mockRepo.EXPECT().AddEntities(input).Times(0)
+				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(0)
 
 				flusher := flusher.NewFlusher(2, mockRepo)
 
-				flusher.Flush(input)
+				flusher.Flush(ctx, input)
 			})
 
 			It("input is nil AddEntities must called 0 times", func() {
 
 				var input []models.Timeline
 
-				mockRepo.EXPECT().AddEntities(input).Times(0)
+				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(0)
 
 				flusher := flusher.NewFlusher(2, mockRepo)
 
-				flusher.Flush(input)
+				flusher.Flush(ctx, input)
 			})
 		})
 	})
@@ -82,11 +79,11 @@ var _ = Describe("Flusher", func() {
 	Describe("error processing", func() {
 		Context("error processing from Repo", func() {
 			It("Repo AddEntities not return error, correct work flusher", func() {
-				mockRepo.EXPECT().AddEntities(gomock.Any()).Times(1)
+				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(1)
 
 				flusher := flusher.NewFlusher(2, mockRepo)
 
-				flusher.Flush([]models.Timeline{newTimeline(1)})
+				flusher.Flush(ctx, []models.Timeline{newTimeline(1)})
 			})
 
 			It("Repo AddEntities return error, flusher throw panic", func() {
@@ -97,12 +94,12 @@ var _ = Describe("Flusher", func() {
 				}()
 
 				mockRepo.EXPECT().
-					AddEntities(gomock.Any()).
+					AddEntities(ctx, gomock.Any()).
 					Return(errors.New("some error"))
 
 				flusher := flusher.NewFlusher(2, mockRepo)
 
-				flusher.Flush([]models.Timeline{newTimeline(1)})
+				flusher.Flush(ctx, []models.Timeline{newTimeline(1)})
 			})
 		})
 	})
@@ -113,7 +110,7 @@ func newTimeline(id uint64) models.Timeline {
 		Id:     id,
 		UserId: uint64(2),
 		Type:   uint64(3),
-		From:   models.Timestamp(int64(200)),
-		To:     models.Timestamp(int64(200)),
+		From:   timestamp.Timestamp{Seconds: 100},
+		To:     timestamp.Timestamp{Seconds: 200},
 	}
 }
