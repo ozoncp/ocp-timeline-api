@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	"github.com/ozoncp/ocp-timeline-api/internal/api"
+	"github.com/ozoncp/ocp-timeline-api/internal/metrics"
 	"github.com/ozoncp/ocp-timeline-api/internal/mocks"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
 	"github.com/ozoncp/ocp-timeline-api/internal/utils"
@@ -16,17 +17,22 @@ import (
 
 var _ = Describe("Api", func() {
 	var (
-		crtl     *gomock.Controller
-		mockRepo *mocks.MockRepo
-		ctx      context.Context
-		server   desc.OcpTimelineApiServer
+		crtl         *gomock.Controller
+		mockRepo     *mocks.MockRepo
+		mockProducer *mocks.MockProducer
+		ctx          context.Context
+		server       desc.OcpTimelineApiServer
 	)
+	BeforeSuite(func() {
+		metrics.RegisterMetrics()
+	})
 
 	BeforeEach(func() {
 		crtl = gomock.NewController(GinkgoT())
 		mockRepo = mocks.NewMockRepo(crtl)
+		mockProducer = mocks.NewMockProducer(crtl)
 		ctx = context.TODO()
-		server = api.NewServiceOcpTimeline(mockRepo)
+		server = api.NewServiceOcpTimeline(mockRepo, mockProducer)
 	})
 
 	AfterEach(func() {
@@ -48,6 +54,7 @@ var _ = Describe("Api", func() {
 		Context("add", func() {
 			It("correct date from/to", func() {
 				mockRepo.EXPECT().AddEntities(ctx, gomock.Any()).Times(1)
+				mockProducer.EXPECT().Send(gomock.Any(), gomock.Any()).Times(1)
 
 				input := &desc.CreateTimelineV1Request{
 					Timeline: timeline,
@@ -90,6 +97,7 @@ var _ = Describe("Api", func() {
 			It("correct data", func() {
 
 				mockRepo.EXPECT().UpdateEntity(ctx, gomock.Any()).Times(1).Return(true, nil)
+				mockProducer.EXPECT().Send(gomock.Any(), gomock.Any()).Times(1)
 
 				input := &desc.UpdateTimelineV1Request{
 					Timeline: timeline,
@@ -146,6 +154,7 @@ var _ = Describe("Api", func() {
 			It("correct data", func() {
 
 				mockRepo.EXPECT().RemoveEntity(ctx, gomock.Any()).Times(1)
+				mockProducer.EXPECT().Send(gomock.Any(), gomock.Any()).Times(1)
 
 				input := &desc.RemoveTimelineV1Request{
 					Id: 1,

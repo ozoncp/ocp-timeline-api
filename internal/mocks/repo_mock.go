@@ -79,6 +79,21 @@ func (mr *MockRepoMockRecorder) ListEntities(arg0, arg1, arg2 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEntities", reflect.TypeOf((*MockRepo)(nil).ListEntities), arg0, arg1, arg2)
 }
 
+// MultiCreateEntity mocks base method.
+func (m *MockRepo) MultiCreateEntity(arg0 context.Context, arg1 []models.Timeline) ([]uint64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MultiCreateEntity", arg0, arg1)
+	ret0, _ := ret[0].([]uint64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MultiCreateEntity indicates an expected call of MultiCreateEntity.
+func (mr *MockRepoMockRecorder) MultiCreateEntity(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MultiCreateEntity", reflect.TypeOf((*MockRepo)(nil).MultiCreateEntity), arg0, arg1)
+}
+
 // RemoveEntity mocks base method.
 func (m *MockRepo) RemoveEntity(arg0 context.Context, arg1 uint64) error {
 	m.ctrl.T.Helper()
