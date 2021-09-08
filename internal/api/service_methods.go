@@ -2,11 +2,15 @@ package api
 
 import (
 	"context"
+	"github.com/opentracing/opentracing-go"
+	. "github.com/ozoncp/ocp-timeline-api/internal/broker"
+	"github.com/ozoncp/ocp-timeline-api/internal/metrics"
 	"github.com/ozoncp/ocp-timeline-api/internal/models"
+	"github.com/ozoncp/ocp-timeline-api/internal/utils"
+	desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
-import desc "github.com/ozoncp/ocp-timeline-api/pkg/ocp-timeline-api"
 
 func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -29,6 +33,15 @@ func (a *serviceOcpTimeline) CreateTimelineV1(context context.Context, req *desc
 
 	log.Info().Msg("create timeline was successful")
 
+	err := a.producer.Send(Create.String(), map[string]interface{}{"timeline": timeline})
+
+	if err != nil {
+		log.Error().Err(err).Msg("error produce in kafka")
+
+		return nil, err
+	}
+
+	metrics.IncCreateCounter()
 	return &desc.CreateTimelineV1Response{Id: timeline.Id}, nil
 }
 
@@ -90,11 +103,20 @@ func (a *serviceOcpTimeline) RemoveTimelineV1(context context.Context, req *desc
 	}
 
 	log.Info().Msg("remove timeline was successful")
+
+	err := a.producer.Send(Remove.String(), Message{Data: map[string]interface{}{"id": req.Id}})
+
+	if err != nil {
+		log.Error().Err(err).Msg("error produce in kafka")
+
+		return nil, err
+	}
+
+	metrics.IncRemoveCounter()
 	return &desc.RemoveTimelineV1Response{}, nil
 }
 
 func (a *serviceOcpTimeline) UpdateTimelineV1(ctx context.Context, req *desc.UpdateTimelineV1Request) (*desc.UpdateTimelineV1Response, error) {
-
 	temp := &models.Timeline{
 		Id:     req.Timeline.Id,
 		UserId: req.Timeline.UserId,
@@ -110,5 +132,59 @@ func (a *serviceOcpTimeline) UpdateTimelineV1(ctx context.Context, req *desc.Upd
 		return nil, err
 	}
 
+	log.Info().Msg("update timeline was successful")
+
+	err = a.producer.Send(
+		Update.String(),
+		Message{Data: map[string]interface{}{"timeline": temp, "success": flag}},
+	)
+
+	if err != nil {
+		log.Error().Err(err).Msg("error produce in kafka")
+
+		return nil, err
+	}
+
+	metrics.IncUpdateCounter()
 	return &desc.UpdateTimelineV1Response{Updated: flag}, nil
+}
+
+func (a *serviceOcpTimeline) MultiCreateTimelinesV1(ctx context.Context, req *desc.MultiCreateTimelinesV1Request) (*desc.MultiCreateTimelinesV1Response, error) {
+	batchSize := 5
+	tracer := opentracing.GlobalTracer()
+	span := tracer.StartSpan("MultiCreateTimelinesV1")
+
+	defer span.Finish()
+
+	timelines := make([]models.Timeline, 0, len(req.Timelines))
+
+	for _, t := range req.Timelines {
+
+		timelines = append(timelines, models.Timeline{
+			Type:   t.Type,
+			UserId: t.UserId,
+			From:   *t.From,
+			To:     *t.To,
+		})
+	}
+
+	batches := utils.ChunkTimeline(timelines, batchSize)
+	for i := range batches {
+		err := func() error {
+			childSpan := tracer.StartSpan("Size of data bytes 12", opentracing.ChildOf(span.Context()))
+			defer childSpan.Finish()
+
+			_, err := a.repo.MultiCreateEntity(ctx, batches[i])
+
+			return err
+		}()
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	log.Info().Msg("multiple timelines add successful")
+
+	return &desc.MultiCreateTimelinesV1Response{Added: true}, nil
 }

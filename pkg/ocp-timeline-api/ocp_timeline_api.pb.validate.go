@@ -33,6 +33,159 @@ var (
 	_ = anypb.Any{}
 )
 
+// Validate checks the field values on MultiCreateTimelinesV1Request with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *MultiCreateTimelinesV1Request) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	for idx, item := range m.GetTimelines() {
+		_, _ = idx, item
+
+		if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MultiCreateTimelinesV1RequestValidationError{
+					field:  fmt.Sprintf("Timelines[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// MultiCreateTimelinesV1RequestValidationError is the validation error
+// returned by MultiCreateTimelinesV1Request.Validate if the designated
+// constraints aren't met.
+type MultiCreateTimelinesV1RequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreateTimelinesV1RequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreateTimelinesV1RequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreateTimelinesV1RequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreateTimelinesV1RequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreateTimelinesV1RequestValidationError) ErrorName() string {
+	return "MultiCreateTimelinesV1RequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreateTimelinesV1RequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreateTimelinesV1Request.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreateTimelinesV1RequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreateTimelinesV1RequestValidationError{}
+
+// Validate checks the field values on MultiCreateTimelinesV1Response with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, an error is returned.
+func (m *MultiCreateTimelinesV1Response) Validate() error {
+	if m == nil {
+		return nil
+	}
+
+	// no validation rules for Added
+
+	return nil
+}
+
+// MultiCreateTimelinesV1ResponseValidationError is the validation error
+// returned by MultiCreateTimelinesV1Response.Validate if the designated
+// constraints aren't met.
+type MultiCreateTimelinesV1ResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MultiCreateTimelinesV1ResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MultiCreateTimelinesV1ResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MultiCreateTimelinesV1ResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MultiCreateTimelinesV1ResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MultiCreateTimelinesV1ResponseValidationError) ErrorName() string {
+	return "MultiCreateTimelinesV1ResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e MultiCreateTimelinesV1ResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMultiCreateTimelinesV1Response.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MultiCreateTimelinesV1ResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MultiCreateTimelinesV1ResponseValidationError{}
+
 // Validate checks the field values on UpdateTimelineV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, an error is returned.
